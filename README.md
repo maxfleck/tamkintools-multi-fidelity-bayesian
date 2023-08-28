@@ -49,20 +49,20 @@ in this example the impact of missing high energy high fidelity samples is shown
 
 most extensive example including Bayesian techniques for better sampling
 
-#### ThermoAquisition_thermoProps
+#### ThermoAcquisition_thermoProps
 
 - only low fidelity samples are used
 - a problem oriented acquisition function is introduced and tested
 - thermodynamic properties are calculated based on the samples
 - ... and can be compared to our extensively sampled reference
 
-#### ThermoAquisitionDyn
+#### ThermoAcquisitionDyn
 
 - a dynamic version of our problem oriented acquisition function is introduced
 - adjusts its parameters on the run
 - useful when energy range of a scan is a priori unknown
 
-#### ThermoAquisitionMF_e1_scan1
+#### ThermoAcquisitionMF_e1_scan1
 
 - utilizes everything:
 	- Multi-Fidelity model
@@ -71,7 +71,7 @@ most extensive example including Bayesian techniques for better sampling
 	- our acquisition function
 - allows deeper insights
 
-#### ThermoAquisitionMF_TS_scan2
+#### ThermoAcquisitionMF_TS_scan2
 
 - utilizes everything:
 	- Multi-Fidelity model
