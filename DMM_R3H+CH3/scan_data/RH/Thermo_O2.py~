@@ -1,0 +1,452 @@
+# Author:  Wassja A. Kopp
+# Version: 1.3
+# Date:    21th July 2016
+
+from tamkin import *
+from molmod import *
+from nasafit import *
+import matplotlib.pyplot as plt
+import numpy
+import re
+
+# NpT is used when nothing else is specified (1bar)
+
+import os 
+from datetime import date
+
+#------------------------------------------------------------------------------------------------------------------------------------------------
+
+#############
+# Constants #
+#############
+
+R = 8.3144598
+R_a = 8.3144598
+kcal = 4.1868 # kJ
+
+level_prec = 100
+T_plot     = 1000
+ExtRotSym  = 1
+
+unit = 2
+
+if unit == 1:
+	unit = 1
+else:
+	unit = kcal
+
+############
+# TeX-File #
+############
+
+try:
+	Coeff = open("O2-Coeff"".tex","w")
+	Dev_h = open("O2-Dev_h"".tex","w")
+	Dev_s = open("O2-Dev_s"".tex","w")
+	Dev_Cp = open("O2-Dev_Cp"".tex","w")
+	Thermo = open("O2-Thermo"".tex","w")
+except:
+	print("Error")
+	sys.exit(0)
+
+####################
+# Checking routine #
+####################
+
+def check1(fname, txt):
+	F = open(fname, 'r')
+	f = F.read()
+	F.close()
+
+	print ""
+	print "Checking routine:"
+	print "File name:", F.name
+
+	erg = re.search(txt,f)
+	if erg == None:
+		print "CCSD(T) not found"
+	else:
+                energy = float(erg.group(1))*10**float(erg.group(2))
+		print "CCSD(T) =", energy
+
+	return energy
+	F.close()
+
+E2 = check1("../O2dz.log", "CCSD\(T\)\=\s*(\-?\d+\.\d+)D([+-]\d+)")
+E3 = check1("../O2tz.log", "CCSD\(T\)\=\s*(\-?\d+\.\d+)D([+-]\d+)")
+
+#####################################
+# Single point energies calculation #
+#####################################
+
+def specalc(E2,E3):
+	a = (216.*(E2-E3))/(19)
+	Einf2 = E2 - a/8.
+	Einf3 = E3 - a/27.
+	Einf = numpy.mean([Einf2,Einf3])
+	print ""
+	print "Single point energies calculation with extrapolation scheme"
+	print "a =", a
+	print "Einf =", Einf
+	return a, Einf
+
+a, EinfO2 = specalc(E2,E3)
+
+###################
+# Number of atoms #
+###################
+
+def atomnum(fname):
+	F = open(fname, 'r')
+	lines = F.read().splitlines()	
+	F.close()
+
+	print ""
+	print "Checking number of atoms:"
+	print "File name:", F.name
+
+	erg = re.search(r"(\w+)(\s+)(\w+)(\s+)(\d+)", str(lines[2]))
+	N = erg.group(5)
+
+	print "Number of atoms:", N
+
+	return N
+	F.close()
+
+Natom = atomnum("../O2freq.fchk")
+
+#####################
+# Checking elements #
+#####################
+
+def elements(fname, N):
+	F = open(fname, 'r')
+	lines = F.read().splitlines()	
+	F.close()
+
+	print ""
+	print "Checking elements:"
+	print "File name:", F.name
+
+	nC = 0
+	nH = 0
+	nO = 0
+
+	l0 = lines.index(" Title Card Required")
+
+	for i in xrange(l0+4,l0+4+int(N)):
+		erg = re.search(r"([CHO]+)(\s+)(\-?)(\d+)\.(\d*)(\s+)(\-?)(\d+)\.(\d*)(\s+)(\-?)(\d+)\.(\d*)", str(lines[i]))
+		if erg.group(1) == "C":
+			nC += 1
+		elif erg.group(1) == "H":
+			nH += 1
+		elif erg.group(1) == "O":
+			nO += 1
+		else:
+			print "There is an element that is not C, H or O!"
+
+	print "C = ", nC
+	print "H = ", nH
+	print "O = ", nO
+
+	return nC, nH, nO
+	F.close()
+
+nC, nH, nO = elements("../O2freq.log", Natom)
+
+########
+# Main #
+########
+
+print ""
+
+O2         = load_molecule_g03fchk("../O2freq.fchk", energy=Einf)
+
+nma_O2     = NMA(O2, ConstrainExt())
+
+pf_O2_HO   = PartFun(nma_O2, [ExtTrans(), ExtRot(symmetry_number=ExtRotSym)])
+
+pf_O2_HO.write_to_file("O2_HO.csv")
+
+TG = 1000
+T0 = 298.15
+T1 = numpy.array(range(100,TG,100))
+T2 = numpy.array(range(TG,4000,200))
+hf = 164  # Enthalpy of formation from compound method calculation in kJ/mol 
+h1 = []
+h2 = []
+s1 = []
+s2 = []
+
+#k       = numpy.zeros((len(T),3),float)
+#A2      = numpy.zeros((len(T2),3),float)
+
+#######################################
+# Enthalpy, Entropy and Heat capacity #
+#######################################
+
+T = []
+h_NASA = []
+h_Fit = []
+s_NASA = []
+s_Fit = []
+Cp_NASA = []
+Cp_Fit = []
+h_NASA_kcal = []
+h_Fit_kcal = []
+s_NASA_kcal = []
+s_Fit_kcal = []
+Cp_NASA_kcal = []
+Cp_Fit_kcal = []
+
+delta_enthalpy = []
+delta_enthalpy_kcal = []
+delta_entropy = []
+delta_entropy_kcal = []
+delta_Cp = []
+delta_Cp_kcal = []
+
+# NASA fit calculation
+enthalpy, coeffs, lagr_multi, errorfit = nasafit(pf_O2_HO, hf, T1, T2)
+
+# Joule or not-joule, that's the question
+if unit == 1:
+	# Formatting the output
+	print "{:10} {:^44} {:^22} {:^22}".format("Fit:", "Enthalpy", "Entropy", "Heat Capacity")
+	print "{:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}".format("T","Nasa","pf:","Nasa*RT","pf*RT","S","S_fit", "Cp", "CpNasa")
+	print "{:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}".format("[K]","[]","[]","[kJ/mol]","[kJ/mol]","[J/molK]","[J/molK]", "[J/molK]", "[J/molK]")
+	
+	# Filling the lists
+	for i in xrange(len(enthalpy)):
+		T.append(enthalpy[i,0])
+		h_NASA.append(enthalpy[i,1])
+		h_Fit.append(enthalpy[i,2])
+		delta_enthalpy.append(h_Fit[i]-h_NASA[i])
+		s_NASA.append(enthalpy[i,5])
+		s_Fit.append(enthalpy[i,6])
+		delta_entropy.append(s_Fit[i]-s_NASA[i])
+		Cp_NASA.append(enthalpy[i,7])
+		Cp_Fit.append(enthalpy[i,8])
+		delta_Cp.append(Cp_Fit[i]-Cp_NASA[i])
+		
+		# Output
+		print "{:>10.1f} {:>10.3f} {:>10.3f} {:>10.3f} {:>10.3f} {:>10.1f} {:>10.1f} {:>10.2f} {:>10.2f}".format(enthalpy[i,0],enthalpy[i,1],enthalpy[i,2],enthalpy[i,3],enthalpy[i,4],enthalpy[i,5],enthalpy[i,6],enthalpy[i,8],enthalpy[i,7])
+
+	# Writing the TeX file (Enthalpy in joule)
+	Dev_h.write("{0:^4} {1:^12} {2:^12} {3:^12}".format("%T","h_Fit","h_NASA", "delta h"))
+	Dev_h.write("\n")
+	for i in xrange(len(enthalpy)):
+		Dev_h.write(str(T[i])+" & "+"{0:8.1f}".format(h_Fit[i])+" & "+"{0:8.1f}".format(h_NASA[i])+" & "+"{0:8.3f}".format(delta_enthalpy[i])+"\t"+"\\\\"+"\n")
+
+	# Writing the TeX file (Entropy in joule)
+	Dev_s.write("{0:^4} {1:^12} {2:^12} {3:^12}".format("%T","s_Fit","s_NASA", "delta s"))
+	Dev_s.write("\n")
+	for i in xrange(len(enthalpy)):
+		Dev_s.write(str(T[i])+" & "+"{0:.2f}".format(s_Fit[i])+" & "+"{0:.2f}".format(s_NASA[i])+" & "+"{0:.3f}".format(delta_entropy[i])+"\t"+"\\\\"+"\n")
+
+	# Writing the TeX file (Heat capacity in joule)
+	Dev_Cp.write("{0:^4} {1:^12} {2:^12} {3:^12}".format("%$T$","$C_{p,\\text{fit}}","$C_{p,\\text{NASA}}", "\\Delta $C_{p}"))
+	Dev_Cp.write("\n")
+	for i in xrange(len(enthalpy)):
+		Dev_Cp.write(str(T[i])+" & "+"{0:10.2f}".format(Cp_Fit[i])+" & "+"{0:10.2f}".format(Cp_NASA[i])+" & "+"{0:10.3f}".format(delta_Cp[i])+"\t"+"\\\\"+"\n")
+
+else:
+	# Formatting the output
+	print "{:10} {:^44} {:^22} {:^22}".format("Fit:", "Enthalpy", "Entropy", "Heat Capacity")
+	print "{:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}".format("T","Nasa","pf:","Nasa*RT","pf*RT","S","S_fit", "Cp", "CpNasa")
+	print "{:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}".format("[K]","[]","[]","[kcal/mol]","[kcal/mol]","[cal/molK]","[cal/molK]", "[cal/molK]", "[cal/molK]")
+
+	# Filling the lists
+	for i in xrange(len(enthalpy)):
+		T.append(enthalpy[i,0])
+		h_NASA_kcal.append(enthalpy[i,1]/unit)
+		h_Fit_kcal.append(enthalpy[i,2]/unit)
+		delta_enthalpy_kcal.append(h_Fit_kcal[i]/unit-h_NASA_kcal[i]/unit)
+		s_NASA_kcal.append(enthalpy[i,5]/unit)
+		s_Fit_kcal.append(enthalpy[i,6]/unit)
+		delta_entropy_kcal.append(s_Fit_kcal[i]/unit-s_NASA_kcal[i]/unit)
+		Cp_NASA_kcal.append(enthalpy[i,7]/unit)
+		Cp_Fit_kcal.append(enthalpy[i,8]/unit)
+		delta_Cp_kcal.append(Cp_Fit_kcal[i]/unit-Cp_NASA_kcal[i]/unit)
+
+		# Output
+		print "{:>10.1f} {:>10.3f} {:>10.3f} {:>10.3f} {:>10.3f} {:>10.1f} {:>10.1f} {:>10.2f} {:>10.2f}".format(enthalpy[i,0],enthalpy[i,1],enthalpy[i,2],enthalpy[i,3]/kcal,enthalpy[i,4]/kcal,enthalpy[i,5]/kcal,enthalpy[i,6]/kcal,enthalpy[i,8]/kcal,enthalpy[i,7]/kcal)
+
+	# Writing the TeX file (Enthalpy in kcal)
+	Dev_h.write("{0:^4} {1:^12} {2:^12} {3:^12}".format("%T","h_Fit/kcal","h_NASA/kcal", "(delta h)/kcal"))
+	Dev_h.write("\n")
+	for i in xrange(len(enthalpy)):
+		Dev_h.write(str(T[i])+" & "+"{0:.1f}".format(h_Fit_kcal[i])+" & "+"{0:.1f}".format(h_NASA_kcal[i])+" & "+"{0:.3f}".format(delta_enthalpy_kcal[i])+"\t"+"\\\\"+"\n")
+
+	# Writing the TeX file (Entropy in kcal)
+	Dev_s.write("{0:^4} {1:^12} {2:^12} {3:^12}".format("%T","s_Fit/kcal","s_NASA/kcal", "(delta s)/kcal"))
+	Dev_s.write("\n")
+	for i in xrange(len(enthalpy)):
+		Dev_s.write(str(T[i])+" & "+"{0:.2f}".format(s_Fit_kcal[i])+" & "+"{0:.2f}".format(s_NASA_kcal[i])+" & "+"{0:.3f}".format(delta_entropy_kcal[i])+"\t"+"\\\\"+"\n")
+
+	# Writing the TeX file (Heat capacity in kcal)
+	Dev_Cp.write("{0:^4} {1:^12} {2:^12} {3:^12}".format("%$T$","$C_{p,\\text{fit}}","$C_{p,\\text{NASA}}", "\\Delta $C_{p}"))
+	Dev_Cp.write("\n")
+	for i in xrange(len(enthalpy)):
+		Dev_Cp.write(str(T[i])+" & "+"{0:10.2f}".format(Cp_Fit_kcal[i])+" & "+"{0:10.2f}".format(Cp_NASA_kcal[i])+" & "+"{0:10.3f}".format(delta_Cp_kcal[i])+"\t"+"\\\\"+"\n")
+
+print "\nChi-Squared:\n{:10}{:.8e}\n{:10}{:.8e}".format("Enthalpy:", errorfit[0], "Entropy:", errorfit[1])
+
+#####################
+# NASA coefficients #
+#####################
+
+Coeff.write("{0:^3} {1:^12} {2:^12} {3:^12} {4:^12} {5:^12} {6:^12} {7:^12}".format("%T1","a1","a2","a3","a4","a5","a6","a7"))
+Coeff.write("\n")
+a_I = []
+a_II = []
+
+print "\nNasa Coefficients:\n"
+head = ""
+
+# T < 1000K
+for i in xrange(7):
+	print "a{}(T < 1000 K) = {:20.10e}".format(i,coeffs[i])
+	head = head+"a{}(T < 1000 K),".format(i)
+	a_I.append(coeffs[i])
+
+Coeff.write("\t"+"{0:.4e}".format(a_I[0])+" & "+"{0:.4e}".format(a_I[1])+" & "+"{0:.4e}".format(a_I[2])+" & "+"{0:.4e}".format(a_I[3])+" & "+"{0:.4e}".format(a_I[4])+" & "+"{0:.4e}".format(a_I[5])+" & "+"{0:.4e}".format(a_I[6])+"\t"+"\\\\"+"\n")
+
+Coeff.write("{0:^3} {1:^12} {2:^12} {3:^12} {4:^12} {5:^12} {6:^12} {7:^12}".format("%T2","a1","a2","a3","a4","a5","a6","a7"))
+Coeff.write("\n")
+
+# T > 1000K
+print ""  
+for i in xrange(7,14):
+	print "a{}(T > 1000 K) = {:20.10e}".format(i-7,coeffs[i])
+	head = head+"a{}(T > 1000 K),".format(i-7)
+	a_II.append(coeffs[i])
+
+Coeff.write("\t"+"{0:.4e}".format(a_II[0])+" & "+"{0:.4e}".format(a_II[1])+" & "+"{0:.4e}".format(a_II[2])+" & "+"{0:.4e}".format(a_II[3])+" & "+"{0:.4e}".format(a_II[4])+" & "+"{0:.4e}".format(a_II[5])+" & "+"{0:.4e}".format(a_II[6])+"\t"+"\\\\"+"\n")
+
+numpy.savetxt("nasa_coefficients.csv",numpy.reshape(coeffs,(1,len(coeffs))),delimiter=',',header=head)
+
+##############
+# Thermo.tex #
+##############
+
+hf = (pf_O2_HO.internal_heat(T0)/kjmol - pf_O2_HO.internal_heat(T0)/kjmol)/(T0*R_a/1000)
+sf = (pf_O2_HO.entropy(T0)/(joule/(mol*kelvin)))/R_a
+
+if unit == 1:
+	Thermo.write("{0:^4} {1:^12} {2:^12} {3:^12} {4:^12} {5:^12} {6:^12} {7:^12}".format("%","hf(298.15K)","sf(298.15K)", "Cp(298.15K)", "Cp(500K)", "Cp(1000K)", "Cp(1500)", "Cp(2000K)"))
+	Thermo.write("\n")
+	Thermo.write("O2"+" & "+"\t"+"{0:10.3f}".format(hf)+" & "+"{0:10.3f}".format(sf)+" & "+"{0:10.2f}".format(Cp_NASA[1]+(298.15-200)/(300-200)*(Cp_NASA[2]-Cp_NASA[1]))+" & "+"{0:10.2f}".format(Cp_NASA[4])+" & "+"{0:10.2f}".format(Cp_NASA[9])+" & "+"{0:10.2f}".format(Cp_NASA[11]+(1500-1400)/(1600-1400)*(Cp_NASA[12]-Cp_NASA[11]))+" & "+"{0:10.2f}".format(Cp_NASA[14])+"\t"+"\\\\")
+
+else:
+	Thermo.write("{0:^4} {1:^12} {2:^12} {3:^12} {4:^12} {5:^12} {6:^12} {7:^12}".format("%","hf(298.15K)","sf(298.15K)", "Cp_kcal(298.15K)", "Cp_kcal(500K)", "Cp_kcal(1000K)", "Cp_kcal(1500K)", "Cp_kcal(2000K)"))
+	Thermo.write("\n")
+	Thermo.write("O2"+" & "+"\t"+"{0:10.3f}".format(hf)+" & "+"{0:10.3f}".format(sf)+" & "+"{0:10.2f}".format(Cp_NASA_kcal[1]+(298.15-200)/(300-200)*(Cp_NASA_kcal[2]-Cp_NASA_kcal[1]))+" & "+"{0:10.2f}".format(Cp_NASA_kcal[4])+" & "+"{0:10.2f}".format(Cp_NASA_kcal[9])+" & "+"{0:10.2f}".format(Cp_NASA_kcal[11]+(1500-1400)/(1600-1400)*(Cp_NASA_kcal[12]-Cp_NASA_kcal[11]))+" & "+"{0:10.2f}".format(Cp_NASA_kcal[14])+"\t"+"\\\\")
+
+########
+# Date #
+########
+
+today = date.today()
+insertdate = str(today.day) + "/" + str(today.month) + "/" + str(today.year - 2000)
+
+###############################################################
+# Nasa polynomial datasheet needs some molecular informations #
+###############################################################
+
+formula = pf_O2_HO.chemical_formula
+O = " "
+H = " "
+C = " "
+oxy = " "
+hydro = " "
+carb = " "
+other = " "
+oth = " "
+chars = list(formula)
+for i in xrange(len(chars)):
+    if chars[i] == "O":
+        O = "O"
+        if chars[i+1].isdigit():
+            oxy = int(chars[i+1])
+        else:
+            oxy = 1
+        
+    elif chars[i] == "H":
+        H = "H"
+        if chars[i+1].isdigit():
+            hydro = int(chars[i+1])
+        else:
+            hydro = 1
+        
+    elif chars[i] == "C":
+        C = "C"
+        if chars[i+1].isdigit():
+            carb = int(chars[i+1])
+        else:
+            carb = 1
+
+print ""
+#print "Standard Format for Nasa-Polynomials (note high temperature coefficients coming first):"
+#print "C2H5COCH3  29/4/15 THERMC   4H   8O   1    0G   300.000  5000.000 1380.000    31"
+#print " 1.25141235E+01 1.84604475E-02-6.14816056E-06 9.37968198E-10-5.37721162E-14    2"
+#print "-3.46118541E+04-3.82309512E+01 1.92048232E+00 4.00983271E-02-2.20686090E-05    3"
+#print " 5.85110392E-09-5.66573305E-13-3.05908852E+04 1.98194682E+01                   4"
+#print ""
+print "THERMO"
+T       = numpy.append(T1,T2)
+print "{:10.3f}{:10.3f}{:10.3f}".format(min(T), 1000, max(T))
+#print "! NASA Polynomial format for CHEMKIN-II"
+print "{:11}{:8}{:5}{:1}{:4}{:1}{:4}{:1}{:4}{:1}{:4}{:4}{:<9.3f}{:<9.3f}{:<9.3f}{:>5}".format(formula, insertdate, "MBFD",C, carb, H, hydro, O, oxy, other, oth, "G", min(T), max(T), 1000, "1")
+print "{: .8E}{: .8E}{: .8E}{: .8E}{: .8E}    2".format(coeffs[7], coeffs[8], coeffs[9], coeffs[10], coeffs[11]) 
+print "{: .8E}{: .8E}{: .8E}{: .8E}{: .8E}    3".format(coeffs[12], coeffs[13], coeffs[0], coeffs[1], coeffs[2])
+print "{: .8E}{: .8E}{: .8E}{: .8E}                   4".format(coeffs[3], coeffs[4], coeffs[5], coeffs[6])
+
+#########
+# Plots #
+#########
+
+def plotcomp(f_Fit,f_NASA,fname1,fname2,keyword):
+	f0 = plt.figure()
+	ax0 = f0.add_subplot(111)
+	ax0.plot(T, f_Fit, linestyle='-', color='r', linewidth=2, label=fname1)
+	ax0.plot(T, f_NASA, linestyle='--', color='b', linewidth=2, label=fname2)
+	plt.xlabel('Temperature / [K]')
+	if keyword == 'Enthalpy_kcal':
+		plt.ylabel('Enthalpy / [kcal/mol]')
+	elif keyword == 'Entropy_cal':
+		plt.ylabel('Entropy / [cal/molK]')
+	elif keyword == 'HeatCapacity_cal':
+		plt.ylabel('Heat capacity / [cal/molK]')
+	elif keyword == 'Enthalpy':
+		plt.ylabel('Enthalpy / [kJ/mol]')
+	elif keyword == 'Entropy':
+		plt.ylabel('Entropy / [J/molK]')
+	elif keyword == 'HeatCapacity':
+		plt.ylabel('Heat capacity / [J/molK]')
+	plt.title('Comparison of f_Fit and f_NASA')
+	ax0.set_xlim([min(T), max(T)])
+	ax0.set_ylim([min(np.concatenate((f_Fit,f_NASA), axis=0))-5, max(np.concatenate((f_Fit,f_NASA), axis=0))+5])
+	ax0.grid(True)
+	plt.legend(loc='best', borderaxespad=2)
+	plt.savefig('O2_'+keyword+'.eps', format='eps', dpi=300)
+	plt.savefig('O2_'+keyword+'.png', format='png', dpi=300)
+
+if unit == 1:
+	plotcomp(h_Fit,h_NASA,'h_Fit','h_NASA','Enthalpy')
+	plotcomp(s_Fit,s_NASA,'s_Fit','s_NASA','Entropy')
+	plotcomp(Cp_Fit,Cp_NASA,'Cp_Fit','Cp_NASA','HeatCapacity')
+else:
+	plotcomp(h_Fit_kcal,h_NASA_kcal,'h_Fit_kcal','h_NASA_kcal','Enthalpy_kcal')
+	plotcomp(s_Fit_kcal,s_NASA_kcal,'s_Fit_kcal','s_NASA_kcal','Entropy_kcal')
+	plotcomp(Cp_Fit_kcal,Cp_NASA_kcal,'Cp_Fit_kcal','Cp_NASA_kcal','HeatCapacity_kcal')
+
+#######
+# End #
+#######
+
+print "END"
+print ""
+print "\n***************************************************************************************\n"
+print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Successfully Done !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+print "The End."
