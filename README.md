@@ -6,6 +6,8 @@ This repository consists of several examples combining different levels of quant
 
 All plots shown in the paper can be reproduced with this code.
 
+---
+
 ### PI_example
 
 a starting example to get used to the approach and play around with kernels and hyperparameters
@@ -29,6 +31,8 @@ in this example quantum mechanic results from different levels of theory contrad
 - shows behavior of linear Multi-Fidelity models for contradicting samples
 
 
+---
+
 ### Umer_results
 
 in this example the impact of missing high energy high fidelity samples is shown
@@ -38,6 +42,7 @@ in this example the impact of missing high energy high fidelity samples is shown
 - shows the impact of missing high energy high fidelity samples
 - deviates a sampling strategy for initial high fidelity samples when a low fidelity scan is available
 
+---
 
 ### DMM_R3H+CH3
 
@@ -73,3 +78,25 @@ most extensive example including Bayesian techniques for better sampling
 	- Bayesian methods 
 	- our acquisition function
 - allows deeper insights
+
+---
+
+### code
+
+#### tamkin_multi_fidelity
+
+contains our Multi-Fidelity model based on Gpy and emukit
+
+- tamkin_multi_fidelity
+	+ class to initialize, train and plot a Multi-Fidelity model
+	+ written for 1D rotational scans
+	+ ...but easily extendable to higher dimensional cases
+
+#### thermoAQ
+
+contains our acquisition function based on GpyOpt
+
+- AcquisitionThermo
+	+ implementation of our problem oriented acquisition function
+- AcquisitionThermoDyn
+	+ implementation the dynamic version of our problem oriented acquisition function 
