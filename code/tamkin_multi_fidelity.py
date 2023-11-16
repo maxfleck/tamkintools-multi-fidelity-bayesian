@@ -188,7 +188,7 @@ class tamkin_multi_fidelity():
         hf_mean = np.squeeze(hf_mean)
         hf_std = np.squeeze(hf_std)
 
-        for i,w in enumerate( self.unique_weights[-1] ):
+        for i,w in enumerate( self.unique_weights[:-1] ):
             #print(i,w)
             p = np.squeeze( np.where( self.fidelities==i ) )
             plt.plot( self.normed_angles[p], self.normed_energies[p],".", 
@@ -198,7 +198,7 @@ class tamkin_multi_fidelity():
         plt.fill_between(dummy, hf_mean-hf_std, hf_mean+hf_std,alpha=self.alpha,color=self.colors[-1])
         #plt.scatter(self.angles, self.energies,c=self.fidelities, cmap=self.cmap)
         
-        i = -1
+        i = len(self.unique_weights)-1
         w = self.unique_weights[i]
         p = np.squeeze( np.where( self.fidelities==i ) )
         plt.plot( self.normed_angles[p], self.normed_energies[p],".", 
@@ -229,7 +229,7 @@ class tamkin_multi_fidelity():
         fig, ax = plt.subplots()
         ax.yaxis.offsetText.set_fontsize(self.fsize)
         ax.ticklabel_format(useOffset=False)
-        for i,w in enumerate( self.unique_weights[-1] ):
+        for i,w in enumerate( self.unique_weights[:-1] ):
             #print(i,w)
             p = np.squeeze( np.where( self.fidelities==i ) )
             plt.plot( self.angles[p], self.energies[p],".", 
@@ -239,7 +239,7 @@ class tamkin_multi_fidelity():
         plt.fill_between(ndummy, hf_mean-hf_std, hf_mean+hf_std,alpha=self.alpha,color=self.colors[-1])
         #plt.scatter(self.angles, self.energies,c=self.fidelities, cmap=self.cmap)
 
-        i = -1
+        i = len(self.unique_weights)-1
         w = self.unique_weights[i]        
         p = np.squeeze( np.where( self.fidelities==i ) )
         plt.plot( self.angles[p], self.energies[p],".", 
