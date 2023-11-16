@@ -1,2 +1,6 @@
 */.ipynb_checkpoints
 *back*
+*__pycache__*
+build
+dist
+*egg*
