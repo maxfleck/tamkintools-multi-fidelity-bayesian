@@ -71,8 +71,8 @@ class tamkin_multi_fidelity():
         
         # plot normed data and estimated fidelites
         plt.scatter(self.normed_angles, self.normed_energies,c=self.fidelities, cmap=self.cmap)
-        plt.xlabel("normalised angles")
-        plt.ylabel("normalised energies")
+        plt.xlabel("normalised angle")
+        plt.ylabel("normalised energy")
         plt.show()
         plt.close()
         
@@ -179,7 +179,7 @@ class tamkin_multi_fidelity():
         return ndummy, hf_mean*self.energy_range + self.energy_min, hf_std*self.energy_range
 
 
-    def plot_normed_results(self,save=""):
+    def plot_normed_results(self,save="", legend=True):
         """
         plots normed rsults of a trained multi fidelity model
         """
@@ -194,7 +194,7 @@ class tamkin_multi_fidelity():
             plt.plot( self.normed_angles[p], self.normed_energies[p],".", 
                      color=self.colors[i], label=self.fidelity_labels[i],
                     markersize=self.msize)        
-        plt.plot(dummy, hf_mean,color=self.colors[-1], label="high fidelity prediction",linewidth=self.lsize)
+        plt.plot(dummy, hf_mean,color=self.colors[-1], label="high fidelity pred",linewidth=self.lsize)
         plt.fill_between(dummy, hf_mean-hf_std, hf_mean+hf_std,alpha=self.alpha,color=self.colors[-1])
         #plt.scatter(self.angles, self.energies,c=self.fidelities, cmap=self.cmap)
         
@@ -206,11 +206,12 @@ class tamkin_multi_fidelity():
                 markersize=self.msize)           
         
         plt.xlim(0,1)
-        plt.xlabel("normalised angles",fontsize=self.fsize)
-        plt.ylabel("normalised energies",fontsize=self.fsize)
+        plt.xlabel("normalised angle",fontsize=self.fsize)
+        plt.ylabel("normalised energy",fontsize=self.fsize)
         plt.xticks(fontsize=self.fsize)     
         plt.yticks(fontsize=self.fsize)     
-        plt.legend(fontsize=self.fsize,frameon=False,loc='center left', bbox_to_anchor=(1.01, 0.5))
+        if legend:
+            plt.legend(fontsize=self.fsize,frameon=False ) #,loc='center left', bbox_to_anchor=(1.01, 0.5))
         if save:
             plt.savefig(save+".png", bbox_inches='tight')
             plt.savefig(save+".pdf", bbox_inches='tight')
@@ -219,7 +220,7 @@ class tamkin_multi_fidelity():
         return        
     
     
-    def plot_results(self,save=""):
+    def plot_results(self,save="",xlabel="deg / °",ylabel="energy / (kJ/mol)", legend=True):
         """
         plots absolute rsults of a trained multi fidelity model
         """
@@ -235,7 +236,7 @@ class tamkin_multi_fidelity():
             plt.plot( self.angles[p], self.energies[p],".", 
                      color=self.colors[i], label=self.fidelity_labels[i],
                     markersize=self.msize)
-        plt.plot(ndummy, hf_mean,color=self.colors[-1], label="high fidelity prediction",linewidth=self.lsize)
+        plt.plot(ndummy, hf_mean,color=self.colors[-1], label="high fidelity pred",linewidth=self.lsize)
         plt.fill_between(ndummy, hf_mean-hf_std, hf_mean+hf_std,alpha=self.alpha,color=self.colors[-1])
         #plt.scatter(self.angles, self.energies,c=self.fidelities, cmap=self.cmap)
 
@@ -248,11 +249,12 @@ class tamkin_multi_fidelity():
         
         dummy = np.sort( np.array((0,1))*self.angle_range + self.angle_min )
         plt.xlim(dummy[0],dummy[1])
-        plt.xlabel("angles",fontsize=self.fsize)
-        plt.ylabel("energies",fontsize=self.fsize)
+        plt.xlabel(xlabel,fontsize=self.fsize)
+        plt.ylabel(ylabel,fontsize=self.fsize)
         plt.xticks(fontsize=self.fsize)     
         plt.yticks(fontsize=self.fsize)     
-        plt.legend(fontsize=self.fsize,frameon=False,loc='center left', bbox_to_anchor=(1.01, 0.5))
+        if legend:
+            plt.legend(fontsize=self.fsize,frameon=False ) #,loc='center left', bbox_to_anchor=(1.01, 0.5))
         if save:
             plt.savefig(save+".png", bbox_inches='tight')
             plt.savefig(save+".pdf", bbox_inches='tight')
