@@ -1,0 +1,184 @@
+Title: Title Card Required
+Chemical formula: O2C6H10
+Electronic energy [au]: -384.81576
+Zero-point contribution [kJ/mol]: 395.0984034
+Zero-point energy [au]: -384.66528
+Contributions to the partition function:
+  ELECTRONIC
+    Multiplicity: 1
+    Electronic energy: -384.8157635
+  HINDERED_ROTOR_8_9_10_11_13
+    Dihedral indexes: 3 2 12 8
+    Top indexes: 8 9 10 11 13
+    Rotational symmetry: 1
+    Even potential: False
+    This is a hindered rotor
+    Maximum number of cosines in the fit: 14
+    RMSD of the fit [kJ/mol]: 0.00
+    Relative RMSD of the fit the fit [%]: 0.2
+    Pearson R^2 of the fit [%]: 100.000
+    Potential: Angle [deg]    Energy [kJ/mol]
+               185.75            3.1
+               189.39            3.3
+               193.03            3.4
+               196.66            3.4
+               200.30            3.4
+               203.94            3.3
+               207.57            3.2
+               211.21            3.0
+               214.85            2.8
+               218.48            2.7
+               222.12            2.6
+               225.75            2.5
+               229.39            2.5
+               233.03            2.5
+               236.66            2.4
+               240.30            2.4
+               243.94            2.4
+               247.57            2.3
+               251.21            2.3
+               254.85            2.2
+               258.48            2.2
+               262.12            2.1
+               265.75            2.1
+               269.39            2.0
+               273.03            1.9
+               276.66            1.9
+               280.30            1.8
+               283.94            1.7
+               287.57            1.6
+               291.21            1.5
+               294.85            1.3
+               298.48            1.2
+               302.12            1.0
+               305.75            0.9
+               309.39            0.7
+               313.03            0.6
+               316.66            0.5
+               320.30            0.4
+               323.94            0.4
+               327.57            0.4
+               331.21            0.4
+               334.85            0.5
+               338.48            0.6
+               342.12            0.7
+               345.75            0.8
+               349.39            0.8
+               353.03            0.9
+               356.66            1.0
+                 0.30            1.0
+                 3.94            1.1
+                 7.57            1.1
+                11.21            1.1
+                14.85            1.0
+                18.48            1.0
+                22.12            0.9
+                25.75            0.8
+                29.39            0.7
+                33.03            0.6
+                36.66            0.5
+                40.30            0.4
+                43.94            0.3
+                47.57            0.2
+                51.21            0.1
+                54.85            0.1
+                58.48            0.0
+                62.12            0.0
+                65.75            0.0
+                69.39            0.0
+                73.03            0.0
+                76.66            0.1
+                80.30            0.2
+                83.94            0.3
+                87.57            0.4
+                91.21            0.5
+                94.85            0.6
+                98.48            0.7
+               102.12            0.9
+               105.75            1.0
+               109.39            1.1
+               113.03            1.2
+               116.66            1.3
+               120.30            1.4
+               123.94            1.5
+               127.57            1.6
+               131.21            1.7
+               134.85            1.8
+               138.48            1.9
+               142.12            1.9
+               145.75            2.0
+               149.39            2.1
+               153.03            2.2
+               156.66            2.3
+               160.30            2.4
+               163.94            2.6
+               167.57            2.7
+               171.21            2.8
+               174.85            2.9
+               178.48            2.9
+               182.12            3.0
+               185.75            3.1
+    Number of QM energy levels: 200
+<_io.TextIOWrapper name='PIa_HR_2.csv' mode='w' encoding='UTF-8'>     Center [A]:     1.09    -0.12     1.13
+    Axis [1]:    -0.98     0.14    -0.11
+    Moment [amu*bohr**2]: 119.560867
+    Reduced moment [amu*bohr**2]: 71.331020
+    Cancel wavenumber [1/cm]: 20.5
+    The cancelation wavenumber is derived from the torsional potential.
+    Energy levels [kJ/mol]:
+        0.12    0.36    0.54    0.58    0.79    0.83    0.97    1.05
+        1.13    1.23    1.33    1.43    1.54    1.64    1.74    1.85
+        1.94    2.04    2.13    2.22    2.31    2.39    2.47    2.54
+        2.62    2.70    2.78    2.86    2.94    3.03    3.11    3.20
+        3.27    3.39    3.43    3.58    3.59    3.79    3.79    4.01
+        4.01    4.24    4.24    4.49    4.49    4.75    4.75    5.03
+        5.03    5.32    5.32    5.62    5.62    5.93    5.93    6.26
+        6.26    6.60    6.60    6.95    6.95    7.31    7.31    7.69
+        7.69    8.08    8.08    8.48    8.48    8.89    8.89    9.32
+        9.32    9.76    9.76   10.21   10.21   10.67   10.67   11.15
+       11.15   11.63   11.63   12.13   12.13   12.64   12.64   13.16
+       13.16   13.70   13.70   14.25   14.25   14.81   14.81   15.38
+       15.38   15.96   15.96   16.56   16.56   17.16   17.16   17.78
+       17.78   18.42   18.42   19.06   19.06   19.72   19.72   20.38
+       20.38   21.06   21.06   21.76   21.76   22.46   22.46   23.18
+       23.18   23.91   23.91   24.65   24.65   25.40   25.40   26.16
+       26.16   26.94   26.94   27.73   27.73   28.53   28.53   29.34
+       29.34   30.17   30.17   31.00   31.00   31.85   31.85   32.71
+       32.71   33.59   33.59   34.47   34.47   35.37   35.37   36.28
+       36.28   37.20   37.20   38.13   38.13   39.08   39.08   40.04
+       40.04   41.01   41.01   41.99   41.99   42.98   42.98   43.99
+       43.99   45.01   45.01   46.04   46.04   47.08   47.08   48.13
+       48.13   49.20   49.20   50.28   50.28   51.37   51.37   52.47
+       52.47   53.58   53.58   54.71   54.71   55.85   55.85   57.00
+       57.00   58.16   58.16   59.33   59.33   60.52   60.52   61.72
+    Number of basis functions: 401
+    Zero-point contribution [kJ/mol]: -0.1225906
+  ROTATIONAL
+    Rotational symmetry number: 1
+    Moments of inertia [amu*bohr**2]: 772.261152  1191.005688 1459.061137
+    Threshold for non-zero moments of inertia [amu*bohr**2]: 5.485799e-04
+    Non-zero moments of inertia: 3
+  TRANSLATIONAL
+    Dimension: 3
+    Constant pressure: True
+    Pressure [bar]: 1.01325
+      BIG FAT WARNING!!!
+      This is an NpT partition function.
+      Internal heat contains a PV term (and is therefore the enthalpy).
+      Free energy contains a PV term (and is therefore the Gibbs free energy).
+      The heat capacity is computed at constant pressure.
+    Mass [amu]: 114.068080
+  VIBRATIONAL
+    Number of zero wavenumbers: 0 
+    Number of real wavenumbers: 48 
+    Number of imaginary wavenumbers: 0
+    Frequency scaling factor: 1.0000
+    Zero-point scaling factor: 1.0000
+    Real Wavenumbers [1/cm]:
+        31.3    34.9    44.9    81.5   109.5   118.7   125.4   244.3
+       338.2   426.7   597.7   621.5   663.1   735.6   803.4   847.2
+       905.8   939.4   996.1  1039.5  1061.3  1070.8  1101.8  1112.8
+      1173.9  1187.4  1248.8  1255.6  1397.6  1408.9  1430.3  1487.2
+      1496.4  1502.3  1509.0  1526.7  1541.8  1631.9  3022.4  3057.0
+      3077.7  3118.6  3139.9  3151.7  3262.5  3274.5  3303.4  3818.8
+    Zero-point contribution [kJ/mol]: 395.2209940

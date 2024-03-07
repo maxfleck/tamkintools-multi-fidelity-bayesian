@@ -20,10 +20,16 @@ class AcquisitionThermo(AcquisitionBase):
     analytical_gradient_prediction = True
 
     def __init__(self, model, space, beta=1.0, jitter=1.0, plot=False,
-                 optimizer=None, cost_withGradients=None):
+                 optimizer=None, cost_withGradients=None, savepath=""):
         self.optimizer = optimizer
         self.beta   = beta
         self.plot = plot
+        self.savepath = savepath
+        self.call_count = 0
+        self.msize=8 
+        self.fsize=15
+        self.alpha=0.3
+        self.lsize = 4                
         super(AcquisitionThermo, self).__init__(model, space,optimizer=optimizer,
                                                    cost_withGradients=cost_withGradients)
         self.jitter = jitter
@@ -46,12 +52,22 @@ class AcquisitionThermo(AcquisitionBase):
         f_acqu = mb - self.jitter*lnp
 
         if np.sum( x.shape ) > 4 and self.plot:
-            plt.plot(x,f_acqu,".",label="acq")
-            plt.plot(x,mb,".",label="E")
-            plt.plot(x,self.jitter*lnp,".",label="S")
-            plt.legend()
+            
+            plt.plot(x,self.jitter*lnp,".",label="entropic",markersize=self.msize)
+            plt.plot(x,mb,".",label="energetic",markersize=self.msize)            
+            plt.plot(x,f_acqu,".",label="total",markersize=self.msize)
+            
+            plt.legend(fontsize=self.fsize,frameon=False )
+            plt.xlabel("normalised angle",fontsize=self.fsize)
+            plt.ylabel("acquisition",fontsize=self.fsize)
+            plt.xticks(np.linspace( np.min(x), np.max(x),6 )  , np.around(np.linspace( 0, 1, 6),1) ,fontsize=self.fsize)     
+            plt.yticks( fontsize=self.fsize)               
+            if self.savepath:
+                plt.savefig(self.savepath+str(self.call_count)+".png", bbox_inches='tight')
+                plt.savefig(self.savepath+str(self.call_count)+".pdf", bbox_inches='tight')                
             plt.show()
             plt.close()
+            self.call_count += 1
         return f_acqu
 
     def _compute_acq_withGradients(self, x):
@@ -88,17 +104,23 @@ class AcquisitionThermoDyn(AcquisitionBase):
     analytical_gradient_prediction = True
 
     def __init__(self, model, space, beta=1.0, m_range=1.0, jitter=1.0, plot=False,
-                 optimizer=None, cost_withGradients=None):
+                 optimizer=None, cost_withGradients=None, savepath=""):
         self.optimizer = optimizer
         self.beta_ini  = beta
         self.beta      = beta
         self.m_range_ini   = m_range
         self.m_range   = m_range
         self.plot = plot
+        self.savepath = savepath
+        self.call_count = 0
+        self.msize=8 
+        self.fsize=15
+        self.alpha=0.3
+        self.lsize = 4        
         super(AcquisitionThermoDyn, self).__init__(model, space,optimizer=optimizer,
                                                    cost_withGradients=cost_withGradients)
         self.jitter = jitter
-
+        
     @staticmethod
     def fromConfig(model, space,plot, optimizer, cost_withGradients, config):
         return AcquisitionThermoDyn(model, beta=config['beta'], plot=plot,
@@ -130,12 +152,22 @@ class AcquisitionThermoDyn(AcquisitionBase):
         f_acqu = mb - self.jitter*lnp
 
         if np.sum( x.shape ) > 4 and self.plot:
-            plt.plot(x,f_acqu,".",label="acq")
-            plt.plot(x,mb,".",label="E")
-            plt.plot(x,self.jitter*lnp,".",label="S")
-            plt.legend()
+           
+            plt.plot(x,self.jitter*lnp,".",label="entropic",markersize=self.msize)
+            plt.plot(x,mb,".",label="energetic",markersize=self.msize)            
+            plt.plot(x,f_acqu,".",label="total",markersize=self.msize)
+            
+            plt.legend(fontsize=self.fsize,frameon=False )
+            plt.xlabel("normalised angle",fontsize=self.fsize)
+            plt.ylabel("acquisition",fontsize=self.fsize)
+            plt.xticks(np.linspace( np.min(x), np.max(x),6 )  , np.around(np.linspace( 0, 1, 6),1) ,fontsize=self.fsize)    
+            plt.yticks( fontsize=self.fsize)              
+            if self.savepath:
+                plt.savefig(self.savepath+str(self.call_count)+".png", bbox_inches='tight')
+                plt.savefig(self.savepath+str(self.call_count)+".pdf", bbox_inches='tight')                
             plt.show()
             plt.close()
+            self.call_count += 1
         return f_acqu
 
     def _compute_acq_withGradients(self, x):

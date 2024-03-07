@@ -220,7 +220,7 @@ class tamkin_multi_fidelity():
         return        
     
     
-    def plot_results(self,save="",xlabel="deg / °",ylabel="energy / (kJ/mol)", legend=True):
+    def plot_results(self,save="",xlabel="angle / °",ylabel="energy / (kJ/mol)", legend=True):
         """
         plots absolute rsults of a trained multi fidelity model
         """

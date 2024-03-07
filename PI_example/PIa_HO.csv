@@ -1,0 +1,38 @@
+Title: Title Card Required
+Chemical formula: O2C6H10
+Electronic energy [au]: -384.81576
+Zero-point contribution [kJ/mol]: 395.2209940
+Zero-point energy [au]: -384.66523
+Contributions to the partition function:
+  ELECTRONIC
+    Multiplicity: 1
+    Electronic energy: -384.8157635
+  ROTATIONAL
+    Rotational symmetry number: 1
+    Moments of inertia [amu*bohr**2]: 772.261152  1191.005688 1459.061137
+    Threshold for non-zero moments of inertia [amu*bohr**2]: 5.485799e-04
+    Non-zero moments of inertia: 3
+  TRANSLATIONAL
+    Dimension: 3
+    Constant pressure: True
+    Pressure [bar]: 1.01325
+      BIG FAT WARNING!!!
+      This is an NpT partition function.
+      Internal heat contains a PV term (and is therefore the enthalpy).
+      Free energy contains a PV term (and is therefore the Gibbs free energy).
+      The heat capacity is computed at constant pressure.
+    Mass [amu]: 114.068080
+  VIBRATIONAL
+    Number of zero wavenumbers: 0 
+    Number of real wavenumbers: 48 
+    Number of imaginary wavenumbers: 0
+    Frequency scaling factor: 1.0000
+    Zero-point scaling factor: 1.0000
+    Real Wavenumbers [1/cm]:
+        31.3    34.9    44.9    81.5   109.5   118.7   125.4   244.3
+       338.2   426.7   597.7   621.5   663.1   735.6   803.4   847.2
+       905.8   939.4   996.1  1039.5  1061.3  1070.8  1101.8  1112.8
+      1173.9  1187.4  1248.8  1255.6  1397.6  1408.9  1430.3  1487.2
+      1496.4  1502.3  1509.0  1526.7  1541.8  1631.9  3022.4  3057.0
+      3077.7  3118.6  3139.9  3151.7  3262.5  3274.5  3303.4  3818.8
+    Zero-point contribution [kJ/mol]: 395.2209940
