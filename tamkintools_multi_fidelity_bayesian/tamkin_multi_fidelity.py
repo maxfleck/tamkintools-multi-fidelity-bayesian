@@ -211,7 +211,10 @@ class tamkin_multi_fidelity():
         plt.xticks(fontsize=self.fsize)     
         plt.yticks(fontsize=self.fsize)     
         if legend:
-            plt.legend(fontsize=self.fsize,frameon=False ) #,loc='center left', bbox_to_anchor=(1.01, 0.5))
+            handles, labels = plt.gca().get_legend_handles_labels()
+            order = [0,2,1]
+            plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order],
+                fontsize=self.fsize,frameon=False ) #,loc='center left', bbox_to_anchor=(1.01, 0.5))
         if save:
             plt.savefig(save+".png", bbox_inches='tight')
             plt.savefig(save+".pdf", bbox_inches='tight')
@@ -254,7 +257,10 @@ class tamkin_multi_fidelity():
         plt.xticks(fontsize=self.fsize)     
         plt.yticks(fontsize=self.fsize)     
         if legend:
-            plt.legend(fontsize=self.fsize,frameon=False ) #,loc='center left', bbox_to_anchor=(1.01, 0.5))
+            handles, labels = plt.gca().get_legend_handles_labels()
+            order = [0,2,1]
+            plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order],
+                fontsize=self.fsize,frameon=False ) #,loc='center left', bbox_to_anchor=(1.01, 0.5))
         if save:
             plt.savefig(save+".png", bbox_inches='tight')
             plt.savefig(save+".pdf", bbox_inches='tight')
