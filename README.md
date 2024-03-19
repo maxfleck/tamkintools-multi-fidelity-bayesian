@@ -1,6 +1,8 @@
 # tamkintools_multi_fidelity_bayesian
 
-#### Supporting Information / Code for the publication xxx  
+#### Supporting Information / Code for the publication "Efficient Generation of Torsional Energy Profiles by Multifidelity Gaussian Processes for Hindered-Rotor Corrections"
+
+For more details check our [publication](https://doi.org/10.26434/chemrxiv-2024-95mdm).
 
 This repository consists of several examples combining different levels of quantum theory with Multi-Fidelity modeling and Bayesian methods including a problem-oriented acquisition function for thermodynamic properties.
 
