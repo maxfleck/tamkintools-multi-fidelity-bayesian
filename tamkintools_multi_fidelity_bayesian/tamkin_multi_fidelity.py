@@ -1,3 +1,5 @@
+import numpy
+numpy.testing.Tester = False
 import numpy as np
 np.random.seed(20)
 import GPy

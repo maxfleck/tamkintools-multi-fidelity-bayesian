@@ -1,3 +1,5 @@
+import numpy
+numpy.testing.Tester = False
 from GPyOpt.acquisitions.base import AcquisitionBase
 from GPyOpt.util.general import get_quantiles
 import numpy as np
@@ -61,7 +63,8 @@ class AcquisitionThermo(AcquisitionBase):
             plt.xlabel("normalised angle",fontsize=self.fsize)
             plt.ylabel("acquisition",fontsize=self.fsize)
             plt.xticks(np.linspace( np.min(x), np.max(x),6 )  , np.around(np.linspace( 0, 1, 6),1) ,fontsize=self.fsize)     
-            plt.yticks( fontsize=self.fsize)               
+            plt.yticks( fontsize=self.fsize)         
+            plt.xlim(np.min(x),np.max(x))      
             if self.savepath:
                 plt.savefig(self.savepath+str(self.call_count)+".png", bbox_inches='tight')
                 plt.savefig(self.savepath+str(self.call_count)+".pdf", bbox_inches='tight')                
