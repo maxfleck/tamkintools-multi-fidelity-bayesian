@@ -131,7 +131,7 @@ class tamkin_multi_fidelity():
         self.lin_mf_model.optimize()    
         return
 
-    def predict(self, x ):
+    def predict(self, x, fidelity="high" ):
         """
         predicts normed results for a trained multi fidelity model
         
@@ -139,10 +139,18 @@ class tamkin_multi_fidelity():
             normed input data (values between 0 and 1)
             
         returns mean predictions and corresponding variances as np.arrays
-        """        
-        xx  = np.atleast_2d(x).T
-        xxx = convert_x_list_to_array([x, x])
-        xxxx =  xxx[len(x):]
+        """     
+        #xx  = np.atleast_2d(x).T
+        #xxx = convert_x_list_to_array([x, x])
+        #xxxx =  xxx[len(x):]        
+        
+        dummy = np.atleast_2d(x).T
+        X_plot = convert_x_list_to_array([dummy, dummy])
+        if fidelity==low":
+            X_plot = X_plot[:len(dummy)]
+        else:
+            X_plot = X_plot[len(dummy):]        
+        
         hf_mean, hf_var = self.lin_mf_model.predict(xxxx)
         return hf_mean, hf_var
     
@@ -173,7 +181,12 @@ class tamkin_multi_fidelity():
             
         returns absolute inputs, mean predictions and corresponding standard deviations as np.arrays
         """
-        hf_mean, hf_std = self.predict_hf_normed(dummy)
+        dummy = np.atleast_2d(dummy).T
+        X_plot = convert_x_list_to_array([dummy, dummy])
+        X_plot_l = X_plot[:len(dummy)]
+        X_plot_h = X_plot[len(dummy):]        
+        
+        hf_mean, hf_std = self.predict_hf_normed(X_plot_h)
         ndummy  = dummy*self.angle_range + self.angle_min
         hf_mean = np.squeeze(hf_mean)
         hf_std  = np.squeeze(hf_std)
