@@ -1,8 +1,6 @@
 # tamkintools_multi_fidelity_bayesian
 
-#### Supporting Information / Code for the publication "Efficient Generation of Torsional Energy Profiles by Multifidelity Gaussian Processes for Hindered-Rotor Corrections"
-
-For more details check our [publication](https://doi.org/10.26434/chemrxiv-2024-95mdm).
+#### Supporting Information / Code for the publication xxx  
 
 This repository consists of several examples combining different levels of quantum theory with Multi-Fidelity modeling and Bayesian methods including a problem-oriented acquisition function for thermodynamic properties.
 
@@ -103,3 +101,10 @@ contains our acquisition function based on GpyOpt
 	+ implementation of our problem oriented acquisition function
 - AcquisitionThermoDyn
 	+ implementation the dynamic version of our problem oriented acquisition function 
+
+#### Installation of tamkin and TamkinTools packages
+- Tamkin installation
+	+ Tamkin installation can be carried out with the help of the following links: https://molmod.github.io/tamkin/tutorial/install.html
+	+ Alternatively, conda/conda-forge can also be used to install Tamkin. For directions, use the link: https://anaconda.org/conda-forge/tamkin
+- TamkinTools installation
+	+ TamkinTools is a seperate package with improved and additional features from Tamkin. It can be downloaded from: https://git.rwth-aachen.de/Wassja.Kopp/tamkintools.git
