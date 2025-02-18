@@ -146,7 +146,7 @@ class tamkin_multi_fidelity():
         
         dummy = np.atleast_2d(x).T
         X_plot = convert_x_list_to_array([dummy, dummy])
-        if fidelity==low":
+        if fidelity=="low":
             X_plot = X_plot[:len(dummy)]
         else:
             X_plot = X_plot[len(dummy):]        
