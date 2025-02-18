@@ -181,12 +181,7 @@ class tamkin_multi_fidelity():
             
         returns absolute inputs, mean predictions and corresponding standard deviations as np.arrays
         """
-        dummy = np.atleast_2d(dummy).T
-        X_plot = convert_x_list_to_array([dummy, dummy])
-        X_plot_l = X_plot[:len(dummy)]
-        X_plot_h = X_plot[len(dummy):]        
-        
-        hf_mean, hf_std = self.predict_hf_normed(X_plot_h)
+        hf_mean, hf_std = self.predict_hf_normed(dummy)
         ndummy  = dummy*self.angle_range + self.angle_min
         hf_mean = np.squeeze(hf_mean)
         hf_std  = np.squeeze(hf_std)
